@@ -2,14 +2,16 @@ package com.techelevator.tenmo.controller;
 
 
 import com.techelevator.tenmo.dao.AccountDao;
+import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Balance;
+import com.techelevator.tenmo.model.LoginDTO;
+import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @PreAuthorize("isAuthenticated()")
@@ -18,10 +20,34 @@ public class TenmoController {
 
     @Autowired
     AccountDao dao;
+    @Autowired
+    UserDao userDao;
 
     @RequestMapping(path = "/balance", method = RequestMethod.GET)
     public Balance getBalance(Principal principal) {
         System.out.println(principal.getName());
         return dao.getBalance(principal.getName());
+    }
+
+    @RequestMapping(path = "/users", method = RequestMethod.GET)
+    public List<User> getUsers() {
+        List<User> allUsers = userDao.findAll();
+        return allUsers;
+    }
+
+    @RequestMapping(path = "/users/{username}", method = RequestMethod.GET)
+    public int getUserId(@PathVariable String username) {
+        int userId = userDao.findIdByUsername(username);
+        return userId;
+    }
+
+    /*@RequestMapping(path = "/users/username", method = RequestMethod.GET)
+    public User getUser(@RequestParam String username) {
+        return user.findByUsername(username);
+    }*/
+
+    @RequestMapping(path = "/users", method = RequestMethod.POST)
+    public boolean createUser(@RequestBody User user) {
+        return userDao.create(user.getUsername(), user.getPassword());
     }
 }

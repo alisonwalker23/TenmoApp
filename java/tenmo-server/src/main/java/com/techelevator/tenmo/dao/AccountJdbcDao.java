@@ -2,6 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Balance;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -16,10 +17,18 @@ public class AccountJdbcDao implements AccountDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    @Override
-    public Balance getBalance(String user) {
+   @Override
+    public Balance getBalance(String username) {
         Balance balance = new Balance();
-        balance.setBalance(new BigDecimal("200"));
+        String sql = "SELECT balance FROM accounts JOIN users USING(user_id) WHERE username = ?";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, username);
+
+        if (results.next()) {
+            long newBalance = results.getLong("balance");
+            BigDecimal newBal = BigDecimal.valueOf(newBalance);
+            balance.setBalance(newBal);
+        }
+
         return balance;
     }
 }
