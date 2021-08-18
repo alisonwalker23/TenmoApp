@@ -35,16 +35,16 @@ public class TenmoController {
         return allUsers;
     }
 
-    @RequestMapping(path = "/users/{username}", method = RequestMethod.GET)
+    @RequestMapping(path = "/user/{username}", method = RequestMethod.GET)
     public int getUserId(@PathVariable String username) {
         int userId = userDao.findIdByUsername(username);
         return userId;
     }
 
-    /*@RequestMapping(path = "/users/username", method = RequestMethod.GET)
-    public User getUser(@RequestParam String username) {
-        return user.findByUsername(username);
-    }*/
+    @RequestMapping(path = "/{username}", method = RequestMethod.GET)
+    public User getUser(@PathVariable String username) {
+        return userDao.findByUsername(username);
+    }
 
     @RequestMapping(path = "/users", method = RequestMethod.POST)
     public boolean createUser(@RequestBody User user) {
