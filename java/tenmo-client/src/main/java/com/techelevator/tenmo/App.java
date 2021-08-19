@@ -8,7 +8,10 @@ import org.apiguardian.api.API;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
 
 public class App {
 
@@ -74,7 +77,6 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setBearerAuth(currentUser.getToken());
 		HttpEntity entity = new HttpEntity(httpHeaders);
@@ -97,19 +99,25 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
-
 
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setBearerAuth(currentUser.getToken());
-		HttpEntity entity = new HttpEntity(httpHeaders);
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
 		System.out.println("Available users:\n");
 		User[] user = restTemplate.getForObject(API_BASE_URL + "/users", User[].class);
 		for (User users : user) {
-			System.out.println(users.getUsername());
+			System.out.println("User ID: " + users.getId() + " | Username: " + users.getUsername());
 		}
-		System.out.println("\nPlease enter a user from the list above: ");
+		Integer accountToUserID = console.getUserInputInteger("\nEnter user ID from the list above: ");
+
+		BigDecimal amount = new BigDecimal(console.getUserInput("\nEnter amount you would like to send: "));
+		Transfer transfer = new Transfer(amount, 2, 2, currentUser.getUser().getId(), accountToUserID);
+		HttpEntity<Transfer> entity = new HttpEntity<>(transfer, httpHeaders);
+
+		restTemplate.postForObject(API_BASE_URL + "/transfer", entity, Transfer.class);
+
+
 	}
 
 	private void requestBucks() {

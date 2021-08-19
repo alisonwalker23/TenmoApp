@@ -75,7 +75,6 @@ public class AccountJdbcDao implements AccountDao {
 
             String sqlReceiverUpdate = "UPDATE accounts SET balance = ? WHERE user_id IN (SELECT user_id FROM users WHERE username = ?)";
             jdbcTemplate.update(sqlReceiverUpdate, balanceReceiver.getBalance(), user);
-            //add transfer status = approved
 
             return true;
         }
@@ -84,17 +83,18 @@ public class AccountJdbcDao implements AccountDao {
     }
 
     @Override
-    public boolean transferUpdateAccount(Principal principal, String user, BigDecimal amount) {
-           //Transfer transfer = new Transfer();
-            try {
-                String sqlUpdateTransferRecords = "INSERT INTO transfers(transfer_type_id,  transfer_status_id, account_from, account_to, amount)" +
-                        " VALUES (2, 2, SELECT account_id FROM accounts WHERE user_id = (SELECT user_id FROM users WHERE username = ?))," +
-                        " SELECT account_id FROM accounts WHERE user_id = (SELECT user_id FROM users WHERE username = ?)), ?)";
-                jdbcTemplate.update(sqlUpdateTransferRecords, principal.getName(), user,amount);
-                return true;
-            } catch (Exception ex) {
-                return false;
-            }
+    public void createTransfer(Transfer transfer) {
+        try {
+            String sqlUpdateTransferRecords = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
+                    " VALUES (2, 2, (SELECT account_id FROM accounts WHERE user_id = ?), (SELECT account_id FROM accounts WHERE user_id = ?), ?)";
+            /*jdbcTemplate.queryForObject(sqlUpdateTransferRecords, Transfer.class, transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());*/
+            jdbcTemplate.update(sqlUpdateTransferRecords, transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+
+
+
     }
 
     @Override

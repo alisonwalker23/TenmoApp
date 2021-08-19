@@ -12,7 +12,7 @@ public interface AccountDao {
 
     boolean transferMoney(Principal principal,String user, BigDecimal amount);
 
-    boolean transferUpdateAccount(Principal principal,String user, BigDecimal amount);
+    void createTransfer(Transfer transfer);
 
     Transfer getTransferById(int id);
 }
