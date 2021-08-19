@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Balance;
+import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class AccountJdbcDao implements AccountDao {
     }
 
     @Override
-    public Balance transferMoney(Principal principal, String user, BigDecimal amount) {
+    public boolean transferMoney(Principal principal, String user, BigDecimal amount) {
         //Need to provide the list of users on client side
         //We take in their choice
 
@@ -66,14 +67,31 @@ public class AccountJdbcDao implements AccountDao {
             BigDecimal newSenderBalance = balanceSender.getBalance().subtract(amount);
             balanceSender.setBalance(newSenderBalance);
 
+            String sqlSenderUpdate = "UPDATE accounts SET balance = ? WHERE user_id IN (SELECT user_id FROM users WHERE username = ?)";
+            jdbcTemplate.update(sqlSenderUpdate, balanceSender.getBalance(), principal.getName());
+
             BigDecimal newReceiverBalance = balanceReceiver.getBalance().add(amount);
             balanceReceiver.setBalance(newReceiverBalance);
 
+            String sqlReceiverUpdate = "UPDATE accounts SET balance = ? WHERE user_id IN (SELECT user_id FROM users WHERE username = ?)";
+            jdbcTemplate.update(sqlReceiverUpdate, balanceReceiver.getBalance(), user);
             //add transfer status = approved
 
+            return true;
         }
 
-        return null;
+        return false;
     }
+
+    @Override
+    public void transferUpdateAccount(Principal principal, String user, BigDecimal amount) {
+           //Transfer transfer = new Transfer();
+            String sqlUpdateTransferRecords = "INSERT INTO transfers(transfer_type_id,  transfer_status_id, account_from, account_to, amount)" +
+                    " VALUES (2, 2, SELECT account_id FROM accounts WHERE user_id = (SELECT user_id FROM users WHERE username = ?))," +
+                    " SELECT account_id FROM accounts WHERE user_id = (SELECT user_id FROM users WHERE username = ?)), ?)";
+            jdbcTemplate.update(sqlUpdateTransferRecords, principal.getName(), user,amount);
+
+    }
+
 
 }

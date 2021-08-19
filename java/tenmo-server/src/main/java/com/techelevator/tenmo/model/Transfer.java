@@ -12,6 +12,7 @@ public class Transfer {
     private int accountTo;
 
 
+
     public BigDecimal getAmount() {
         return amount;
     }

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.List;
 
@@ -50,4 +52,9 @@ public class TenmoController {
     public boolean createUser(@RequestBody User user) {
         return userDao.create(user.getUsername(), user.getPassword());
     }
+    @RequestMapping(path = "/accounts/{user}/{amount}", method = RequestMethod.PUT)
+    public boolean transferMoney( Principal principal,@PathVariable String user, @PathVariable BigDecimal amount){
+        return dao.transferMoney(principal, user, amount);
+    }
+
 }
