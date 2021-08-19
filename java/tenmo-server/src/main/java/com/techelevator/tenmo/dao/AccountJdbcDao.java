@@ -36,13 +36,10 @@ public class AccountJdbcDao implements AccountDao {
     }
 
     @Override
-    public boolean transferMoney(Principal principal, String user, BigDecimal amount) {
-        //Need to provide the list of users on client side
-        //We take in their choice
-
+    public void transferMoney(Transfer transfer) {
         Balance balanceSender = new Balance();
-        String sql = "SELECT balance FROM accounts JOIN users USING(user_id) WHERE username = ?";
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, principal.getName());
+        String sql = "SELECT balance FROM accounts WHERE user_id = ?";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transfer.getAccountFrom());
 
         if (result.next()) {
             double newBalance = result.getDouble("balance");
@@ -51,10 +48,9 @@ public class AccountJdbcDao implements AccountDao {
             balanceSender.setBalance(newBal);
         }
 
-
         Balance balanceReceiver = new Balance();
-        String sql1 = "SELECT balance FROM accounts JOIN users USING(user_id) WHERE username = ?";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql1, user);
+        String sql1 = "SELECT balance FROM accounts WHERE user_id = ?";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql1, transfer.getAccountTo());
         if (results.next()) {
 
             double receiverBalance = result.getDouble("balance");
@@ -63,23 +59,23 @@ public class AccountJdbcDao implements AccountDao {
         }
 
 
-        if (balanceSender.getBalance().compareTo(amount) == 1) {
-            BigDecimal newSenderBalance = balanceSender.getBalance().subtract(amount);
+        if (balanceSender.getBalance().compareTo(transfer.getAmount()) == 1) {
+            BigDecimal newSenderBalance = balanceSender.getBalance().subtract(transfer.getAmount());
             balanceSender.setBalance(newSenderBalance);
 
-            String sqlSenderUpdate = "UPDATE accounts SET balance = ? WHERE user_id IN (SELECT user_id FROM users WHERE username = ?)";
-            jdbcTemplate.update(sqlSenderUpdate, balanceSender.getBalance(), principal.getName());
+            String sqlSenderUpdate = "UPDATE accounts SET balance = ? WHERE user_id = ?)";
+            jdbcTemplate.update(sqlSenderUpdate, balanceSender.getBalance(), transfer.getAccountFrom());
 
-            BigDecimal newReceiverBalance = balanceReceiver.getBalance().add(amount);
+            BigDecimal newReceiverBalance = balanceReceiver.getBalance().add(transfer.getAmount());
             balanceReceiver.setBalance(newReceiverBalance);
 
-            String sqlReceiverUpdate = "UPDATE accounts SET balance = ? WHERE user_id IN (SELECT user_id FROM users WHERE username = ?)";
-            jdbcTemplate.update(sqlReceiverUpdate, balanceReceiver.getBalance(), user);
+            String sqlReceiverUpdate = "UPDATE accounts SET balance = ? WHERE user_id = ?)";
+            jdbcTemplate.update(sqlReceiverUpdate, balanceReceiver.getBalance(), transfer.getAccountTo());
 
-            return true;
+
         }
 
-        return false;
+
     }
 
     @Override

@@ -10,7 +10,7 @@ public interface AccountDao {
 
     Balance getBalance(String user);
 
-    boolean transferMoney(Principal principal,String user, BigDecimal amount);
+    void transferMoney(Transfer transfer);
 
     void createTransfer(Transfer transfer);
 

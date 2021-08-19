@@ -5,10 +5,7 @@ import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
 import com.techelevator.view.ConsoleService;
 import org.apiguardian.api.API;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -89,7 +86,13 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setBearerAuth(currentUser.getToken());
+		HttpEntity entity = new HttpEntity(httpHeaders);
 
+		Transfer transfer = restTemplate.exchange(API_BASE_URL + "/transfer/{id}",
+				HttpMethod.GET,entity, Transfer.class).getBody();
+		System.out.println();
 		
 	}
 
@@ -112,11 +115,20 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		Integer accountToUserID = console.getUserInputInteger("\nEnter user ID from the list above: ");
 
 		BigDecimal amount = new BigDecimal(console.getUserInput("\nEnter amount you would like to send: "));
+
 		Transfer transfer = new Transfer(amount, 2, 2, currentUser.getUser().getId(), accountToUserID);
 		HttpEntity<Transfer> entity = new HttpEntity<>(transfer, httpHeaders);
 
 		restTemplate.postForObject(API_BASE_URL + "/transfer", entity, Transfer.class);
+		
+		//updating balance after transfer
+		try{
+			restTemplate.put(API_BASE_URL + "/balance/transfer", transfer);
+		} catch (Exception ex){
+			System.out.println(ex);
+		}
 
+		//restTemplate.exchange(API_BASE_URL + "/transfer",HttpMethod.PUT, entity, Transfer.class).getBody();
 
 	}
 

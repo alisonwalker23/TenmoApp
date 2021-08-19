@@ -54,9 +54,9 @@ public class TenmoController {
         return userDao.create(user.getUsername(), user.getPassword());
     }
 
-    @RequestMapping(path = "/accounts/user/{amount}", method = RequestMethod.PUT)
-    public boolean transferMoney(Principal principal,@RequestBody String user, @PathVariable BigDecimal amount){
-        return dao.transferMoney(principal, user, amount);
+    @RequestMapping(path = "/balance/transfer", method = RequestMethod.PUT)
+    public void transferMoney(@RequestBody Transfer transfer){
+        dao.transferMoney(transfer);
     }
 
     @RequestMapping(path = "/transfer", method = RequestMethod.POST)

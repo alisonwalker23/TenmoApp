@@ -66,4 +66,16 @@ public class Transfer {
     public void setAccountTo(int accountTo) {
         this.accountTo = accountTo;
     }
+
+    @Override
+    public String toString() {
+        return "Transfer Information:\n" +
+                "amount: " + amount +
+                ", transferId=: " + transferId +
+                ", transferTypeId: " + transferTypeId +
+                ", transferStatusId: " + transferStatusId +
+                ", accountFrom: " + accountFrom +
+                ", accountTo: " + accountTo +
+                '}';
+    }
 }
