@@ -5,6 +5,7 @@ import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Balance;
 import com.techelevator.tenmo.model.LoginDTO;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +17,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@PreAuthorize("isAuthenticated()")
+/*@PreAuthorize("isAuthenticated()")*/
 
 public class TenmoController {
 
@@ -52,9 +53,21 @@ public class TenmoController {
     public boolean createUser(@RequestBody User user) {
         return userDao.create(user.getUsername(), user.getPassword());
     }
-    @RequestMapping(path = "/accounts/{user}/{amount}", method = RequestMethod.PUT)
-    public boolean transferMoney( Principal principal,@PathVariable String user, @PathVariable BigDecimal amount){
+
+    @RequestMapping(path = "/accounts/user/{amount}", method = RequestMethod.PUT)
+    public boolean transferMoney(Principal principal,@RequestBody String user, @PathVariable BigDecimal amount){
         return dao.transferMoney(principal, user, amount);
     }
+
+    @RequestMapping(path = "/transfer/user/{amount}", method = RequestMethod.POST)
+    public boolean transferUpdateAccount(Principal principal, @RequestBody String user, @PathVariable BigDecimal amount) {
+        return dao.transferUpdateAccount(principal, user, amount);
+    }
+
+    @RequestMapping(path = "/transfer/{id}", method = RequestMethod.GET)
+    public Transfer getTransferById(@PathVariable int id) {
+        return dao.getTransferById(id);
+    }
+
 
 }

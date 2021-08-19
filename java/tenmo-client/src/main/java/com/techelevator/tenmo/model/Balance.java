@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class Balance {
 
-    private BigDecimal balance;
+    BigDecimal balance;
 
     public BigDecimal getBalance() {
         return balance;

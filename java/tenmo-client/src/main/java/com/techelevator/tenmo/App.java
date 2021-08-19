@@ -1,11 +1,10 @@
 package com.techelevator.tenmo;
 
-import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.tenmo.model.Balance;
-import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
 import com.techelevator.view.ConsoleService;
+import org.apiguardian.api.API;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -76,20 +75,19 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewCurrentBalance() {
 		// TODO Auto-generated method stub
-		System.out.println(currentUser.getToken());
-
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setBearerAuth(currentUser.getToken());
 		HttpEntity entity = new HttpEntity(httpHeaders);
 
-		Balance balance = restTemplate.exchange("http://localhost:8080/balance",
+		Balance balance = restTemplate.exchange(API_BASE_URL + "/balance",
 													HttpMethod.GET, entity, Balance.class).getBody();
 
-		System.out.println(balance.getBalance());
+		System.out.println("Balance: $" + balance.getBalance());
 	}
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
+
 		
 	}
 
@@ -100,7 +98,18 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		
+
+
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setBearerAuth(currentUser.getToken());
+		HttpEntity entity = new HttpEntity(httpHeaders);
+
+		System.out.println("Available users:\n");
+		User[] user = restTemplate.getForObject(API_BASE_URL + "/users", User[].class);
+		for (User users : user) {
+			System.out.println(users.getUsername());
+		}
+		System.out.println("\nPlease enter a user from the list above: ");
 	}
 
 	private void requestBucks() {
