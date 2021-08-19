@@ -85,14 +85,14 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setBearerAuth(currentUser.getToken());
 		HttpEntity entity = new HttpEntity(httpHeaders);
 
-		Transfer transfer = restTemplate.exchange(API_BASE_URL + "/transfer/{id}",
-				HttpMethod.GET,entity, Transfer.class).getBody();
-		System.out.println();
+		Integer transferId = console.getUserInputInteger("Enter transfer ID");
+
+		Transfer transfer = restTemplate.getForObject(API_BASE_URL + "/transfer/" + transferId, Transfer.class);
+		System.out.println(transfer);
 		
 	}
 
@@ -112,7 +112,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		for (User users : user) {
 			System.out.println("User ID: " + users.getId() + " | Username: " + users.getUsername());
 		}
-		Integer accountToUserID = console.getUserInputInteger("\nEnter user ID from the list above: ");
+		Integer accountToUserID = console.getUserInputInteger("\nEnter user ID from the list above");
 
 		BigDecimal amount = new BigDecimal(console.getUserInput("\nEnter amount you would like to send: "));
 

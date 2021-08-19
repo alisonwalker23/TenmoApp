@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class AccountJdbcDao implements AccountDao {
@@ -94,10 +96,10 @@ public class AccountJdbcDao implements AccountDao {
     }
 
     @Override
-    public Transfer getTransferById(int id) {
+    public Transfer getTransferById(int transferId) {
         Transfer transfer = new Transfer();
         String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfers WHERE transfer_id = ?";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
 
         while (results.next()) {
             transfer.setTransferId(results.getInt("transfer_id"));
@@ -110,6 +112,14 @@ public class AccountJdbcDao implements AccountDao {
         }
 
         return transfer;
+    }
+
+    @Override
+    public List<Transfer> getAllTransfersForUser(int userId) {
+        List<Transfer> transferList = new ArrayList<>();
+        String sql = "SELECT transfer_id, account_from, account_to, amount " +
+                "FROM transfers JOIN accounts ON transfers.account_from = accounts.account_id" +
+                "WHERE user_id = ?";
     }
 
 

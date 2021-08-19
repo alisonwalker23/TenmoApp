@@ -22,6 +22,17 @@ public class Transfer {
     public Transfer() {
     }
 
+    @Override
+    public String toString() {
+        return "Transfer Information:\n" +
+                "amount: " + amount +
+                ", transferId=: " + transferId +
+                ", transferTypeId: " + transferTypeId +
+                ", transferStatusId: " + transferStatusId +
+                ", accountFrom: " + accountFrom +
+                ", accountTo: " + accountTo;
+    }
+
     public BigDecimal getAmount() {
         return amount;
     }

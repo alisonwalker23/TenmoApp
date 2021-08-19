@@ -5,6 +5,7 @@ import com.techelevator.tenmo.model.Transfer;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.List;
 
 public interface AccountDao {
 
@@ -15,4 +16,6 @@ public interface AccountDao {
     void createTransfer(Transfer transfer);
 
     Transfer getTransferById(int id);
+
+    List<Transfer> getAllTransfersForUser(int userId);
 }
