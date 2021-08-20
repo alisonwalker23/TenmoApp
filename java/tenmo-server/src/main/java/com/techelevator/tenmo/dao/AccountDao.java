@@ -17,5 +17,5 @@ public interface AccountDao {
 
     Transfer getTransferById(int id);
 
-    List<Transfer> getAllTransfersForUser(int userId);
+    //List<Transfer> getAllTransfersForUser(int userId);
 }

@@ -39,6 +39,7 @@ public class AccountJdbcDao implements AccountDao {
 
     @Override
     public void transferMoney(Transfer transfer) {
+        System.out.println(transfer);
         Balance balanceSender = new Balance();
         String sql = "SELECT balance FROM accounts WHERE user_id = ?";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transfer.getAccountFrom());
@@ -65,13 +66,13 @@ public class AccountJdbcDao implements AccountDao {
             BigDecimal newSenderBalance = balanceSender.getBalance().subtract(transfer.getAmount());
             balanceSender.setBalance(newSenderBalance);
 
-            String sqlSenderUpdate = "UPDATE accounts SET balance = ? WHERE user_id = ?)";
+            String sqlSenderUpdate = "UPDATE accounts SET balance = ? WHERE user_id = ?";
             jdbcTemplate.update(sqlSenderUpdate, balanceSender.getBalance(), transfer.getAccountFrom());
 
             BigDecimal newReceiverBalance = balanceReceiver.getBalance().add(transfer.getAmount());
             balanceReceiver.setBalance(newReceiverBalance);
 
-            String sqlReceiverUpdate = "UPDATE accounts SET balance = ? WHERE user_id = ?)";
+            String sqlReceiverUpdate = "UPDATE accounts SET balance = ? WHERE user_id = ?";
             jdbcTemplate.update(sqlReceiverUpdate, balanceReceiver.getBalance(), transfer.getAccountTo());
 
 
@@ -114,13 +115,13 @@ public class AccountJdbcDao implements AccountDao {
         return transfer;
     }
 
-    @Override
+    /*@Override
     public List<Transfer> getAllTransfersForUser(int userId) {
         List<Transfer> transferList = new ArrayList<>();
         String sql = "SELECT transfer_id, account_from, account_to, amount " +
                 "FROM transfers JOIN accounts ON transfers.account_from = accounts.account_id" +
                 "WHERE user_id = ?";
-    }
+    }*/
 
 
 }

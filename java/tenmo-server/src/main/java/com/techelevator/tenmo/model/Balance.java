@@ -14,4 +14,10 @@ public class Balance {
         this.balance = balance;
     }
 
+    @Override
+    public String toString() {
+        return "Balance{" +
+                "balance=" + balance +
+                '}';
+    }
 }

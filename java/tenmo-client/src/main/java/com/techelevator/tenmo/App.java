@@ -3,6 +3,7 @@ package com.techelevator.tenmo;
 import com.techelevator.tenmo.model.*;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.TenmoService;
 import com.techelevator.view.ConsoleService;
 import org.apiguardian.api.API;
 import org.springframework.http.*;
@@ -29,17 +30,18 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
-    private RestTemplate restTemplate;
+    private RestTemplate restTemplate = new RestTemplate();
+    private TenmoService tenmoService;
 
     public static void main(String[] args) {
-    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
+    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL), new TenmoService(API_BASE_URL));
     	app.run();
     }
 
-    public App(ConsoleService console, AuthenticationService authenticationService) {
+    public App(ConsoleService console, AuthenticationService authenticationService, TenmoService tenmoService) {
 		this.console = console;
 		this.authenticationService = authenticationService;
-		this.restTemplate = new RestTemplate();
+		this.tenmoService = tenmoService;
 	}
 
 	public void run() {
@@ -74,12 +76,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewCurrentBalance() {
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setBearerAuth(currentUser.getToken());
-		HttpEntity entity = new HttpEntity(httpHeaders);
-
-		Balance balance = restTemplate.exchange(API_BASE_URL + "/balance",
-													HttpMethod.GET, entity, Balance.class).getBody();
+    	Balance balance = tenmoService.getBalance(currentUser.getToken());
 
 		System.out.println("Balance: $" + balance.getBalance());
 	}
