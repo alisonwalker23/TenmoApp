@@ -71,21 +71,27 @@ public class Transfer {
         this.accountTo = accountTo;
     }
 
-    public String toStringFullTransfer() {
-        return "Transfer Information:\n" +
-                "Amount: " + amount +
-                "| Transfer ID: " + transferId +
-                "| Transfer Type ID: " + transferTypeId +
-                "| Transfer Status ID: " + transferStatusId +
-                "| Account From: " + accountFrom +
-                "| Account To: " + accountTo;
+    public String toStringFullTransfer(String usernameTo, String usernameFrom) {
+        return "\n------------------------------\n" +
+                "Transfer Details\n" +
+                "------------------------------\n"+
+                "ID: " + transferId +
+                "\nFrom: " + usernameFrom +
+                "\nTo: " + usernameTo +
+                "\nType: Send" +
+                "\nStatus: Approved"+
+                "\nAmount: $" + amount;
+
+
+
     }
 
-    public String toStringLimited() {
-        return "Past Transfers:\n" +
-                "Amount: " + amount +
-                "| Transfer ID: " + transferId +
-                "| Account From: " + accountFrom +
-                "| Account To: " + accountTo;
+    public String toStringLimitedTo(String username) {
+        return "ID: " + transferId + "     From: " + username+ "   Amount: " + amount;
+
+    }
+    public String toStringLimitedFrom(String username) {
+        return "ID: " + transferId + "     To:   " + username+ "   Amount: " + amount ;
+
     }
 }

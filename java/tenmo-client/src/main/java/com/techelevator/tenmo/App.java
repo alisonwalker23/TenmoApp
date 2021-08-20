@@ -89,17 +89,30 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		int userId = currentUser.getUser().getId();
 		int accountId = restTemplate.getForObject(API_BASE_URL + "/users/" + userId, Integer.class);
-
+	//	String username = restTemplate.getForObject(API_BASE_URL + "/users/" + )
 		ResponseEntity<Transfer[]> responseEntity = restTemplate.getForEntity(API_BASE_URL + "/transfers/" + accountId, Transfer[].class);
 		Transfer[] transfers = responseEntity.getBody();
+		System.out.println("\n-----------------------------------------\n" +
+				"   Id         From/To         Amount\n" +
+				"-----------------------------------------");
 		for (Transfer transfer : transfers) {
-			System.out.println(transfer);
+
+			if(transfer.getAccountFrom() != accountId){
+				String username = restTemplate.getForObject(API_BASE_URL + "/users/accounts/" + transfer.getAccountFrom(), String.class);
+				System.out.println(transfer.toStringLimitedTo(username));
+			} else {
+				String username = restTemplate.getForObject(API_BASE_URL + "/users/accounts/" + transfer.getAccountTo(), String.class);
+				System.out.println(transfer.toStringLimitedFrom(username));
+			}
+
 		}
 
-		Integer transferId = console.getUserInputInteger("Enter transfer ID");
+		Integer transferId = console.getUserInputInteger("\nEnter transfer ID");
 
 		Transfer transfer = restTemplate.getForObject(API_BASE_URL + "/transfer/" + transferId, Transfer.class);
-		System.out.println(transfer);
+		String usernameFrom = restTemplate.getForObject(API_BASE_URL + "/users/accounts/" + transfer.getAccountFrom(), String.class);
+		String usernameTo = restTemplate.getForObject(API_BASE_URL + "/users/accounts/" + transfer.getAccountTo(), String.class);
+		System.out.println(transfer.toStringFullTransfer(usernameFrom, usernameTo));
 		
 	}
 

@@ -92,9 +92,6 @@ public class AccountJdbcDao implements AccountDao {
         } catch (Exception ex) {
             System.out.println(ex);
         }
-
-
-
     }
 
     @Override
@@ -126,6 +123,8 @@ public class AccountJdbcDao implements AccountDao {
         transferList.toArray(transfers);
         return transfers;
     }
+
+
 
     private Transfer mapRowToTransfer(SqlRowSet results) {
         Transfer transfer = new Transfer();

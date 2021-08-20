@@ -75,6 +75,9 @@ public class TenmoController {
     public Transfer[] getAllTransfersByAccountId(@PathVariable int accountId) {
         return dao.getAllTransfersByAccountId(accountId);
     }
-
+    @RequestMapping(path = "/users/accounts/{accId}", method = RequestMethod.GET)
+     public String getUsernameFromAccountId(@PathVariable int accId){
+        return userDao.getUsernameFromAccountId(accId);
+    }
 
 }
