@@ -71,13 +71,20 @@ public class Transfer {
         this.accountTo = accountTo;
     }
 
-    @Override
-    public String toString() {
+    public String toStringFullTransfer() {
         return "Transfer Information:\n" +
                 "Amount: " + amount +
                 "| Transfer ID: " + transferId +
                 "| Transfer Type ID: " + transferTypeId +
                 "| Transfer Status ID: " + transferStatusId +
+                "| Account From: " + accountFrom +
+                "| Account To: " + accountTo;
+    }
+
+    public String toStringLimited() {
+        return "Past Transfers:\n" +
+                "Amount: " + amount +
+                "| Transfer ID: " + transferId +
                 "| Account From: " + accountFrom +
                 "| Account To: " + accountTo;
     }

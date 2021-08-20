@@ -10,6 +10,7 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class App {
 
@@ -85,6 +86,15 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setBearerAuth(currentUser.getToken());
 		HttpEntity entity = new HttpEntity(httpHeaders);
+
+		int userId = currentUser.getUser().getId();
+		int accountId = restTemplate.getForObject(API_BASE_URL + "/users/" + userId, Integer.class);
+
+		ResponseEntity<Transfer[]> responseEntity = restTemplate.getForEntity(API_BASE_URL + "/transfers/" + accountId, Transfer[].class);
+		Transfer[] transfers = responseEntity.getBody();
+		for (Transfer transfer : transfers) {
+			System.out.println(transfer);
+		}
 
 		Integer transferId = console.getUserInputInteger("Enter transfer ID");
 
