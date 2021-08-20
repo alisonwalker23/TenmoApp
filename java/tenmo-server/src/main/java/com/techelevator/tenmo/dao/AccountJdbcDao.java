@@ -2,6 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Balance;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.TransferUser;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -38,11 +39,11 @@ public class AccountJdbcDao implements AccountDao {
     }
 
     @Override
-    public void transferMoney(Transfer transfer) {
-        System.out.println(transfer);
+    public void transferMoney(TransferUser transferUser) {
+        System.out.println(transferUser);
         Balance balanceSender = new Balance();
         String sql = "SELECT balance FROM accounts WHERE user_id = ?";
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transfer.getAccountFrom());
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, transferUser.getCurrentUserId());
 
         if (result.next()) {
             double newBalance = result.getDouble("balance");
@@ -53,27 +54,27 @@ public class AccountJdbcDao implements AccountDao {
 
         Balance balanceReceiver = new Balance();
         String sql1 = "SELECT balance FROM accounts WHERE user_id = ?";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql1, transfer.getAccountTo());
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql1, transferUser.getReceiverUserId());
         if (results.next()) {
 
-            double receiverBalance = result.getDouble("balance");
+            double receiverBalance = results.getDouble("balance");
             BigDecimal newRecBal = new BigDecimal(receiverBalance);
             balanceReceiver.setBalance(newRecBal);
         }
 
 
-        if (balanceSender.getBalance().compareTo(transfer.getAmount()) == 1) {
-            BigDecimal newSenderBalance = balanceSender.getBalance().subtract(transfer.getAmount());
+        if (balanceSender.getBalance().compareTo(transferUser.getTransferAmount()) >= 0) {
+            BigDecimal newSenderBalance = balanceSender.getBalance().subtract(transferUser.getTransferAmount());
             balanceSender.setBalance(newSenderBalance);
 
             String sqlSenderUpdate = "UPDATE accounts SET balance = ? WHERE user_id = ?";
-            jdbcTemplate.update(sqlSenderUpdate, balanceSender.getBalance(), transfer.getAccountFrom());
+            jdbcTemplate.update(sqlSenderUpdate, balanceSender.getBalance(), transferUser.getCurrentUserId());
 
-            BigDecimal newReceiverBalance = balanceReceiver.getBalance().add(transfer.getAmount());
+            BigDecimal newReceiverBalance = balanceReceiver.getBalance().add(transferUser.getTransferAmount());
             balanceReceiver.setBalance(newReceiverBalance);
 
             String sqlReceiverUpdate = "UPDATE accounts SET balance = ? WHERE user_id = ?";
-            jdbcTemplate.update(sqlReceiverUpdate, balanceReceiver.getBalance(), transfer.getAccountTo());
+            jdbcTemplate.update(sqlReceiverUpdate, balanceReceiver.getBalance(), transferUser.getReceiverUserId());
 
 
         }
@@ -82,12 +83,12 @@ public class AccountJdbcDao implements AccountDao {
     }
 
     @Override
-    public void createTransfer(Transfer transfer) {
+    public void createTransfer(TransferUser transferUser) {
         try {
             String sqlUpdateTransferRecords = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
                     " VALUES (2, 2, (SELECT account_id FROM accounts WHERE user_id = ?), (SELECT account_id FROM accounts WHERE user_id = ?), ?)";
             /*jdbcTemplate.queryForObject(sqlUpdateTransferRecords, Transfer.class, transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());*/
-            jdbcTemplate.update(sqlUpdateTransferRecords, transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+            jdbcTemplate.update(sqlUpdateTransferRecords, transferUser.getCurrentUserId(), transferUser.getReceiverUserId(), transferUser.getTransferAmount());
         } catch (Exception ex) {
             System.out.println(ex);
         }

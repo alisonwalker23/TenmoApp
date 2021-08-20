@@ -3,10 +3,7 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.model.Balance;
-import com.techelevator.tenmo.model.LoginDTO;
-import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
+import com.techelevator.tenmo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -55,13 +52,13 @@ public class TenmoController {
     }
 
     @RequestMapping(path = "/balance/transfer", method = RequestMethod.PUT)
-    public void transferMoney(@RequestBody Transfer transfer){
-        dao.transferMoney(transfer);
+    public void transferMoney(@RequestBody TransferUser transferUser){
+        dao.transferMoney(transferUser);
     }
 
     @RequestMapping(path = "/transfer", method = RequestMethod.POST)
-    public void createTransfer(@RequestBody Transfer transfer) {
-        dao.createTransfer(transfer);
+    public void createTransfer(@RequestBody TransferUser transferUser) {
+        dao.createTransfer(transferUser);
     }
 
     @RequestMapping(path = "/transfer/{transferId}", method = RequestMethod.GET)

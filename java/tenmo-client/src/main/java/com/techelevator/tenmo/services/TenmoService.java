@@ -1,14 +1,21 @@
 package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.Balance;
+import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
+import com.techelevator.view.ConsoleService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
 
 public class TenmoService {
 
     private String BASE_URL;
+    //private ConsoleService console = new ConsoleService();
     private RestTemplate restTemplate = new RestTemplate();
 
     public TenmoService(String BASE_URL) {
@@ -25,4 +32,11 @@ public class TenmoService {
 
         return balance;
     }
+
+    public void makeTransfer(String token) {
+
+
+    }
+
+
 }

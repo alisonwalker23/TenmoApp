@@ -74,11 +74,11 @@ public class Transfer {
     @Override
     public String toString() {
         return "Transfer Information:\n" +
-                "amount: " + amount +
-                ", transferId=: " + transferId +
-                ", transferTypeId: " + transferTypeId +
-                ", transferStatusId: " + transferStatusId +
-                ", accountFrom: " + accountFrom +
-                ", accountTo: " + accountTo;
+                "Amount: " + amount +
+                "| Transfer ID: " + transferId +
+                "| Transfer Type ID: " + transferTypeId +
+                "| Transfer Status ID: " + transferStatusId +
+                "| Account From: " + accountFrom +
+                "| Account To: " + accountTo;
     }
 }

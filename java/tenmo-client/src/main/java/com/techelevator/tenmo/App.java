@@ -112,19 +112,18 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		Integer accountToUserID = console.getUserInputInteger("\nEnter user ID from the list above");
 
 		BigDecimal amount = new BigDecimal(console.getUserInput("\nEnter amount you would like to send: "));
+		int currentUserId = currentUser.getUser().getId();
+		TransferUser transferUser = new TransferUser(currentUserId, accountToUserID, amount);
+		HttpEntity<TransferUser> entity = new HttpEntity<>(transferUser, httpHeaders);
 
-		Transfer transfer = new Transfer(amount, 2, 2, currentUser.getUser().getId(), accountToUserID);
-		HttpEntity<Transfer> entity = new HttpEntity<>(transfer, httpHeaders);
+		restTemplate.postForObject(API_BASE_URL + "/transfer", entity, TransferUser.class);
 
-		restTemplate.postForObject(API_BASE_URL + "/transfer", entity, Transfer.class);
-		
 		//updating balance after transfer
 		try{
-			restTemplate.put(API_BASE_URL + "/balance/transfer", transfer);
+			restTemplate.put(API_BASE_URL + "/balance/transfer", transferUser);
 		} catch (Exception ex){
 			System.out.println(ex);
 		}
-
 		//restTemplate.exchange(API_BASE_URL + "/transfer",HttpMethod.PUT, entity, Transfer.class).getBody();
 
 	}
