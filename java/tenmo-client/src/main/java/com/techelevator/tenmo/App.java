@@ -79,7 +79,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void viewCurrentBalance() {
     	Balance balance = tenmoService.getBalance(currentUser.getToken());
 
-		System.out.println("Balance: $" + balance.getBalance());
+		System.out.println("Your current account balance is: $" + balance.getBalance());
 	}
 
 	private void viewTransferHistory() {
@@ -107,7 +107,16 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		}
 
-		Integer transferId = console.getUserInputInteger("\nEnter transfer ID");
+		Integer transferId = console.getUserInputInteger("\nPlease enter transfer ID to view details (0 to cancel)");
+		if (transferId == 0) {
+			return;
+		}
+		for (Transfer transfer : transfers) {
+			if (transferId != transfer.getTransferId()) {
+				System.out.println("\n*** Invalid transfer ID ***");
+				return;
+			}
+		}
 
 		Transfer transfer = restTemplate.getForObject(API_BASE_URL + "/transfer/" + transferId, Transfer.class);
 		String usernameFrom = restTemplate.getForObject(API_BASE_URL + "/users/accounts/" + transfer.getAccountFrom(), String.class);
@@ -127,14 +136,32 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		httpHeaders.setBearerAuth(currentUser.getToken());
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-		System.out.println("Available users:\n");
+		System.out.println("\n-------------------------------------\n" +
+				"     Users ID              Name\n" +
+				"-------------------------------------");
 		User[] user = restTemplate.getForObject(API_BASE_URL + "/users", User[].class);
 		for (User users : user) {
-			System.out.println("User ID: " + users.getId() + " | Username: " + users.getUsername());
+			System.out.println("      " + users.getId() + "                 " + users.getUsername());
 		}
-		Integer accountToUserID = console.getUserInputInteger("\nEnter user ID from the list above");
+		Integer accountToUserID = console.getUserInputInteger("\nEnter ID of user you are sending to (0 to cancel)");
+		if (accountToUserID == 0) {
+			return;
+		}
+		for (User users : user) {
+			if (accountToUserID != users.getId()) {
+				System.out.println("\n*** Invalid user ID ***");
+				return;
+			}
+		}
 
-		BigDecimal amount = new BigDecimal(console.getUserInput("\nEnter amount you would like to send: "));
+		BigDecimal amount = new BigDecimal("0");
+		try {
+			amount = new BigDecimal(console.getUserInput("\nEnter amount"));
+		} catch (NumberFormatException e) {
+			System.out.println(System.lineSeparator() + "*** Please enter a number ***" + System.lineSeparator());
+		}
+
+
 		int currentUserId = currentUser.getUser().getId();
 		TransferUser transferUser = new TransferUser(currentUserId, accountToUserID, amount);
 		HttpEntity<TransferUser> entity = new HttpEntity<>(transferUser, httpHeaders);
