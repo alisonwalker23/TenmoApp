@@ -27,7 +27,7 @@ public class UserJdbcDaoTests extends TenmoDaoTests {
 
     @Test
     public void findIdByUsername_returns_correct_id() {
-        long expected = userDao.findIdByUsername("harry potter");
+        long expected = userDao.findIdByUsername("harrypotter");
         long actual = 9999L;
 
         Assert.assertEquals(expected, actual);
@@ -53,7 +53,7 @@ public class UserJdbcDaoTests extends TenmoDaoTests {
 
     /*@Test
     public void create_creates_new_user() {
-        User createdUser = userDao.create(testUser);
+        userDao.create(testUser);
     }*/
 
     @Test

@@ -87,7 +87,6 @@ public class AccountJdbcDao implements AccountDao {
         try {
             String sqlUpdateTransferRecords = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
                     " VALUES (2, 2, (SELECT account_id FROM accounts WHERE user_id = ?), (SELECT account_id FROM accounts WHERE user_id = ?), ?)";
-            /*jdbcTemplate.queryForObject(sqlUpdateTransferRecords, Transfer.class, transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());*/
             jdbcTemplate.update(sqlUpdateTransferRecords, transferUser.getCurrentUserId(), transferUser.getReceiverUserId(), transferUser.getTransferAmount());
         } catch (Exception ex) {
             System.out.println(ex);

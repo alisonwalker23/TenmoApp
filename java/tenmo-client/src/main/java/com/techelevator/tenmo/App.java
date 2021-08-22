@@ -10,12 +10,13 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.List;
 
 public class App {
 
 private static final String API_BASE_URL = "http://localhost:8080/";
-    
+
     private static final String MENU_OPTION_EXIT = "Exit";
     private static final String LOGIN_MENU_OPTION_REGISTER = "Register";
 	private static final String LOGIN_MENU_OPTION_LOGIN = "Login";
@@ -27,7 +28,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private static final String MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS = "View your pending requests";
 	private static final String MAIN_MENU_OPTION_LOGIN = "Login as different user";
 	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
-	
+
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
@@ -49,7 +50,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("*********************");
 		System.out.println("* Welcome to TEnmo! *");
 		System.out.println("*********************");
-		
+
 		registerAndLogin();
 		mainMenu();
 	}
@@ -79,7 +80,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void viewCurrentBalance() {
     	Balance balance = tenmoService.getBalance(currentUser.getToken());
 
-		System.out.println("Your current account balance is: $" + balance.getBalance());
+		System.out.println("Your current account balance is: " + NumberFormat.getCurrencyInstance().format(balance.getBalance()));
 	}
 
 	private void viewTransferHistory() {
@@ -89,7 +90,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		int userId = currentUser.getUser().getId();
 		int accountId = restTemplate.getForObject(API_BASE_URL + "/users/" + userId, Integer.class);
-	//	String username = restTemplate.getForObject(API_BASE_URL + "/users/" + )
+		//	String username = restTemplate.getForObject(API_BASE_URL + "/users/" + )
 		ResponseEntity<Transfer[]> responseEntity = restTemplate.getForEntity(API_BASE_URL + "/transfers/" + accountId, Transfer[].class);
 		Transfer[] transfers = responseEntity.getBody();
 		System.out.println("\n-----------------------------------------\n" +
@@ -97,7 +98,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				"-----------------------------------------");
 		for (Transfer transfer : transfers) {
 
-			if(transfer.getAccountFrom() != accountId){
+			if (transfer.getAccountFrom() != accountId) {
 				String username = restTemplate.getForObject(API_BASE_URL + "/users/accounts/" + transfer.getAccountFrom(), String.class);
 				System.out.println(transfer.toStringLimitedTo(username));
 			} else {
@@ -107,27 +108,33 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		}
 
-		Integer transferId = console.getUserInputInteger("\nPlease enter transfer ID to view details (0 to cancel)");
+		int transferId = console.getUserInputInteger("\nPlease enter transfer ID to view details (0 to cancel)");
 		if (transferId == 0) {
 			return;
 		}
-		for (Transfer transfer : transfers) {
-			if (transferId != transfer.getTransferId()) {
+		boolean found = false;
+		for (Transfer transfer1 : transfers) {
+			if (transferId == transfer1.getTransferId()) {
+				found = true;
+			}
+		}
+			if(!found){
 				System.out.println("\n*** Invalid transfer ID ***");
 				return;
 			}
-		}
+
+
 
 		Transfer transfer = restTemplate.getForObject(API_BASE_URL + "/transfer/" + transferId, Transfer.class);
 		String usernameFrom = restTemplate.getForObject(API_BASE_URL + "/users/accounts/" + transfer.getAccountFrom(), String.class);
 		String usernameTo = restTemplate.getForObject(API_BASE_URL + "/users/accounts/" + transfer.getAccountTo(), String.class);
 		System.out.println(transfer.toStringFullTransfer(usernameFrom, usernameTo));
-		
+
 	}
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private void sendBucks() {
@@ -143,16 +150,20 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		for (User users : user) {
 			System.out.println("      " + users.getId() + "                 " + users.getUsername());
 		}
-		Integer accountToUserID = console.getUserInputInteger("\nEnter ID of user you are sending to (0 to cancel)");
+		int accountToUserID = console.getUserInputInteger("\nEnter ID of user you are sending to (0 to cancel)");
 		if (accountToUserID == 0) {
 			return;
 		}
-		for (User users : user) {
-			if (accountToUserID != users.getId()) {
-				System.out.println("\n*** Invalid user ID ***");
-				return;
-			}
-		}
+        boolean found = false;
+        for (User user1 : user) {
+            if (accountToUserID == user1.getId()) {
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("\n*** Invalid user ID ***");
+            return;
+        }
 
 		BigDecimal amount = new BigDecimal("0");
 		try {
@@ -180,9 +191,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	private void exitProgram() {
 		System.exit(0);
 	}
@@ -236,7 +247,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			}
 		}
 	}
-	
+
 	private UserCredentials collectUserCredentials() {
 		String username = console.getUserInput("Username");
 		String password = console.getUserInput("Password");

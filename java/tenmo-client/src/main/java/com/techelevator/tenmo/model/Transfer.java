@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.model;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 
 public class Transfer {
 
@@ -80,18 +81,18 @@ public class Transfer {
                 "\nTo: " + usernameTo +
                 "\nType: Send" +
                 "\nStatus: Approved"+
-                "\nAmount: $" + amount;
+                "\nAmount: " + NumberFormat.getCurrencyInstance().format(amount);
 
 
 
     }
 
     public String toStringLimitedTo(String username) {
-        return "ID: " + transferId + "     From: " + username+ "   Amount: " + amount;
+        return "ID: " + transferId + "     From: " + username+ "   Amount: " + NumberFormat.getCurrencyInstance().format(amount);
 
     }
     public String toStringLimitedFrom(String username) {
-        return "ID: " + transferId + "     To:   " + username+ "   Amount: " + amount ;
+        return "ID: " + transferId + "     To:   " + username+ "   Amount: " + NumberFormat.getCurrencyInstance().format(amount);
 
     }
 }
